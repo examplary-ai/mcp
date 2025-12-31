@@ -28,9 +28,27 @@ def get_api_key() -> str:
 
 
 def patch_openapi_spec(spec: dict) -> dict:
-    """Patch OpenAPI spec to fix validation issues"""
-    # Add missing description fields to response objects
+    """Patch OpenAPI spec to fix validation issues and filter endpoints"""
+    # Remove unwanted endpoints
+    excluded_patterns = [
+        "api-key",
+        "api_key",
+        "library",
+        "libraries",
+        "oauth"
+    ]
+
     if "paths" in spec:
+        paths_to_remove = [
+            path for path in spec["paths"].keys()
+            if any(pattern in path.lower() for pattern in excluded_patterns)
+        ]
+
+        for path in paths_to_remove:
+            print(f"Excluding endpoint: {path}", file=sys.stderr)
+            del spec["paths"][path]
+
+        # Add missing description fields to response objects
         for path, path_item in spec["paths"].items():
             for method, operation in path_item.items():
                 if method in ["get", "post", "put", "patch", "delete"] and "responses" in operation:
