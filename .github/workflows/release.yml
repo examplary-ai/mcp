@@ -1,0 +1,88 @@
+name: Build and Release MCPB Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            VERSION="0.0.0-dev"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+
+      - name: Update version in manifest.json
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" manifest.json
+          cat manifest.json
+
+      - name: Create .mcpb package
+        run: |
+          # Create the package
+          zip -r examplary-mcp.mcpb \
+            manifest.json \
+            pyproject.toml \
+            src/ \
+            icon.png \
+            -x "*.pyc" \
+            -x "*__pycache__/*" \
+            -x "*.git/*" \
+            -x "*.github/*" \
+            -x "*.md" \
+            -x ".mcpbignore"
+
+          # Verify the package
+          echo "Package contents:"
+          unzip -l examplary-mcp.mcpb
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: examplary-mcp.mcpb
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          body: |
+            ## Examplary MCP Server v${{ steps.version.outputs.version }}
+
+            ### Installation
+
+            1. Download `examplary-mcp.mcpb` from the assets below
+            2. Open Claude Desktop
+            3. Go to Settings → Extensions
+            4. Click "Install Extension" and select the downloaded file
+            5. Enter your Examplary API key when prompted
+
+            ### Getting Your API Key
+
+            Get your API key from: https://app.examplary.ai/account/developer
+
+            ### What's New
+
+            See the full changelog below for details.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: examplary-mcp
+          path: examplary-mcp.mcpb

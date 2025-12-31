@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/mcpb/refs/heads/main/schemas/mcpb-manifest-v0.3.schema.json",
+  "manifest_version": "0.3",
+  "name": "examplary-mcp",
+  "display_name": "Examplary",
+  "version": "1.0.0",
+  "description": "MCP server for Examplary exam management API",
+  "author": {
+    "name": "Examplary",
+    "email": "hi@examplary.ai",
+    "url": "https://examplary.ai"
+  },
+  "homepage": "https://github.com/examplary-ai/mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/examplary-ai/mcp.git"
+  },
+  "documentation": "https://developers.examplary.ai",
+  "license": "MIT",
+  "keywords": ["examplary", "exam", "education", "assessment", "grading", "ai"],
+  "icon": "icon.png",
+  "server": {
+    "type": "python",
+    "entry_point": "src/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "${__dirname}",
+        "run",
+        "--with",
+        "fastmcp",
+        "src/server.py"
+      ],
+      "env": {
+        "EXAMPLARY_API_KEY": "${user_config.api_key}"
+      }
+    }
+  },
+  "user_config": {
+    "api_key": {
+      "title": "API Key",
+      "description": "Get your API key from https://app.examplary.ai/account/developer",
+      "type": "string",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "linux", "win32"],
+    "runtimes": {
+      "python": ">=3.10"
+    }
+  },
+  "tools_generated": true
+}
