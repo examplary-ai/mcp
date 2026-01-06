@@ -23,7 +23,7 @@ Examplary is an AI-powered exam management platform that helps educators:
 
 ### Option 1: Claude Desktop (.mcpb package)
 
-1. Download the latest `examplary-mcp.mcpb` from the [releases page](https://github.com/examplary/examplary-mcp/releases)
+1. Download the latest `examplary-mcp.mcpb` from the [releases page](https://github.com/examplary-ai/mcp/releases)
 2. Open Claude Desktop
 3. Go to Settings → Extensions
 4. Click "Install Extension" and select the downloaded .mcpb file
@@ -33,8 +33,8 @@ Examplary is an AI-powered exam management platform that helps educators:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/examplary/examplary-mcp.git
-   cd examplary-mcp
+   git clone https://github.com/examplary-ai/mcp.git
+   cd mcp
    ```
 
 2. Install UV (if not already installed):
